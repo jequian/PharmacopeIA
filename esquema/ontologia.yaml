@@ -1,0 +1,532 @@
+# =====================================================================
+# ONTOLOGÍA — Grafo de convergencia farmacológica en trastornos afectivos
+# =====================================================================
+# Versión: 0.1
+# Propósito: definir los tipos de nodo, los tipos de arista y el esquema
+# de evidencia ANTES de cargar datos. Este archivo es normativo: nada
+# entra al grafo si no se ajusta a lo aquí definido.
+#
+# Principio rector: la convergencia mecanística NO explica por sí sola la
+# especificidad clínica. La especificidad surge de (a) DÓNDE se expresa el
+# blanco — capa celular y de circuito — y (b) CUÁL ES EL ESTADO BASAL de
+# ese circuito. Por eso el modelo tiene capas y por eso las aristas llevan
+# signo y dependencia de estado.
+# =====================================================================
+
+meta:
+  version: "0.1"
+  id_format: "<tipo>:<slug-en-minusculas-sin-acentos>"
+  id_examples:
+    - "drug:lamotrigina"
+    - "mol:HCN1"
+    - "cell:interneurona-pv"
+    - "circuit:ca1-hipocampo"
+    - "domain:valencia-negativa"
+    - "pheno:depresion-bipolar"
+    - "bmk:exponente-aperiodico"
+    - "trial:embarc"
+    - "contrast:bloqueadores-sodio"
+
+# =====================================================================
+# 1. TIPOS DE NODO
+# =====================================================================
+
+node_types:
+
+  drug:
+    layer: 0
+    description: "Fármaco o compuesto con actividad psicotrópica documentada."
+    required: [id, name, class, approval_status]
+    optional: [inn, atc, chembl_id, subclasses, notes]
+    fields:
+      class:
+        enum: [antidepresivo, antipsicotico, estabilizador, anticrisis,
+               ansiolitico, psicodelico, neuroesteroide, opioide,
+               estimulante, hormona, antiinflamatorio, natural, experimental]
+      approval_status:
+        enum: [aprobado, aprobado_otra_indicacion, fase_3, fase_2, fase_1,
+               retirado, discontinuado, uso_no_aprobado, tradicional]
+
+  mol:
+    layer: 1
+    description: "Entidad molecular: blanco farmacológico o nodo de cascada."
+    required: [id, name, subtype]
+    optional: [gene, uniprot, family, notes]
+    fields:
+      subtype:
+        enum: [receptor_gpcr, receptor_ionotropico, receptor_tirosina_cinasa,
+               receptor_nuclear, transportador, canal_ionico, enzima,
+               neurotrofina, citocina, segundo_mensajero, cinasa,
+               factor_transcripcion, estructural, lipido_membrana]
+
+  cell:
+    layer: 2
+    description: "Tipo celular. Capa que genera especificidad: el mismo
+                  receptor en una interneurona y en una piramidal produce
+                  efectos OPUESTOS sobre la red."
+    required: [id, name, lineage]
+    optional: [markers, notes]
+    fields:
+      lineage:
+        enum: [neurona_excitatoria, interneurona_gabaergica,
+               neurona_monoaminergica, neurona_colinergica,
+               neurona_peptidergica, astrocito, microglia,
+               oligodendrocito, celula_endotelial, celula_inmune_periferica]
+
+  circuit:
+    layer: 3
+    description: "Estructura, proyección o eje neuroendocrino."
+    required: [id, name, kind]
+    optional: [subregions, notes]
+    fields:
+      kind:
+        enum: [region, subregion, proyeccion, red, eje_neuroendocrino]
+
+  domain:
+    layer: 4
+    description: "Dominio funcional. Vocabulario deliberadamente
+                  transdiagnóstico (estructura tipo RDoC): permite que un
+                  mismo dominio se conecte a diagnósticos distintos."
+    required: [id, name, parent]
+    optional: [constructs, notes]
+    fields:
+      parent:
+        enum: [valencia_negativa, valencia_positiva, sistemas_cognitivos,
+               procesos_sociales, activacion_y_regulacion,
+               sistemas_sensoriomotores]
+
+  pheno:
+    layer: 4
+    description: "Fenotipo clínico: diagnóstico, dimensión sintomática o
+                  ESTRATIFICADOR (la característica que predice respuesta
+                  diferencial — p.ej. 'TOC con tics')."
+    required: [id, name, kind]
+    optional: [dsm_icd, parent_pheno, notes]
+    fields:
+      kind:
+        enum: [diagnostico, dimension_sintomatica, estratificador,
+               curso_clinico, comorbilidad]
+
+  bmk:
+    layer: cross
+    description: "Medida objetiva que indexa el estado de algún nodo.
+                  Puente entre el grafo y datos reales."
+    required: [id, name, modality]
+    optional: [acquisition, scalability, notes]
+    fields:
+      modality:
+        enum: [eeg, erp, mri_estructural, fmri, pet, neuropsicologia,
+               endocrino, inmunologico, genetico, actigrafia,
+               polisomnografia, clinimetrico]
+      scalability:
+        enum: [rutina_clinica, laboratorio_especializado, solo_investigacion]
+
+  trial:
+    layer: cross
+    description: "Estudio como NODO, no como referencia. Existe para poder
+                  registrar PRUEBAS DE CONCEPTO FALLIDAS con su razón de
+                  fracaso — el objetivo central de este proyecto."
+    required: [id, name, design, outcome]
+    optional: [n, population, year, registry_id, refs, notes]
+    fields:
+      design:
+        enum: [rct_doble_ciego, rct_abierto, cruzado, serie_de_casos,
+               reporte_de_caso, cohorte, caso_control, metaanalisis,
+               preclinico, farmacodinamico_fase_1]
+      outcome:
+        enum: [positivo, negativo, mixto, fallo_replicacion, suspendido]
+      failure_mode:
+        description: "SOLO si outcome es negativo/mixto. Distinción crítica
+                      (Etkin et al. 2026, fig. 6): el fracaso farmacológico
+                      y el fracaso de selección de pacientes exigen
+                      respuestas opuestas."
+        enum: [fallo_compromiso_blanco,      # no tocó la diana
+               fallo_seleccion_pacientes,     # diana tocada, población no enriquecida
+               fallo_dosis_exposicion,
+               fallo_desenlace_medicion,
+               fallo_adherencia,
+               fallo_potencia_estadistica,
+               desenmascaramiento,
+               eficacia_real_ausente,
+               indeterminado]
+
+  parcel:
+    layer: 3.5
+    description: "CAPA ESPACIAL. Una región de una parcelación estándar en
+                  espacio común (MNI). Es la única capa donde fármaco y
+                  enfermedad se miden en LAS MISMAS UNIDADES, y por eso es
+                  el único pivote objetivo disponible hoy.
+                  El razonamiento: la densidad de cada blanco por parcela se
+                  mide con PET; la afinidad del fármaco por cada blanco se
+                  mide con radioligando. Multiplicando y sumando se obtiene
+                  un mapa espacial predicho del efecto del fármaco, que ya
+                  es comparable contra cualquier otro mapa cerebral: redes,
+                  gradientes, diferencias caso-control, respuesta a
+                  tratamiento.
+                  Convierte '¿sobre qué actúa este fármaco?' de afirmación
+                  cualitativa en vector numérico.
+                  ADVERTENCIA: los atlas PET son promedios de grupo, con
+                  muestras pequeñas de adultos jóvenes sanos y un solo
+                  radioligando por receptor. No representan a un paciente."
+    required: [id, name, atlas, index]
+    optional: [hemisphere, network, gradient1, centroid_mni, notes]
+    fields:
+      atlas: "Nombre y resolución de la parcelación, p. ej. 'Schaefer-100'.
+              TODO el proyecto usa una sola. Mezclar parcelaciones invalida
+              cualquier correlación entre mapas."
+      index: "Índice de la parcela dentro del atlas (entero)."
+      network: "Red a la que la asigna el atlas (por defecto, saliencia,
+                dorsal atencional, frontoparietal, límbica, visual,
+                somatomotora, subcortical). Es una ETIQUETA heredada del
+                atlas, no una medición nuestra."
+      gradient1: "Posición en el gradiente funcional principal (eje
+                  unimodal-transmodal). Es el ordenamiento cortical más
+                  replicable que existe, y las redes de arriba son cortes
+                  discretos de este continuo."
+      centroid_mni: "[x, y, z]. Necesario para generar nulos con
+                     autocorrelación espacial preservada."
+
+  spatialmap:
+    layer: cross
+    description: "Un vector de valores, uno por parcela, sobre la
+                  parcelación del proyecto. Sirve tanto para densidades de
+                  receptor medidas por PET como para mapas de diferencia
+                  caso-control, de respuesta a tratamiento o de expresión
+                  génica. Los valores viven en CSV, no en YAML: aquí solo
+                  se declara la procedencia."
+    required: [id, name, kind, atlas, source]
+    optional: [units, n_subjects, tracer, column, refs, notes]
+    fields:
+      kind:
+        enum: [densidad_receptor, expresion_genica, gradiente,
+               diferencia_caso_control, respuesta_tratamiento,
+               electrofisiologico, predicho_por_farmaco, otro]
+      column: "Nombre de la columna en espacial/densidades.csv."
+      tracer: "Radioligando, si kind es densidad_receptor. Dos trazadores
+               del mismo receptor pueden dar mapas distintos."
+      n_subjects: "Tamaño de la muestra del atlas. Suele ser pequeño."
+
+  contrast:
+    layer: cross
+    description: "OBJETO ANALÍTICO CENTRAL. Conjunto de fármacos que
+                  comparten un mecanismo nominal pero DIFIEREN en desenlace
+                  clínico. Aquí vive el valor del proyecto: si el mecanismo
+                  compartido fuera suficiente, el contraste no existiría."
+    required: [id, name, shared_mechanism, discordant_outcome, members]
+    optional: [candidate_explanations, resolved, notes]
+    fields:
+      members:
+        description: "Lista de {drug, outcome, distinguishing_features}"
+      resolved:
+        enum: [si, no, parcial]
+
+# =====================================================================
+# 2. TIPOS DE ARISTA
+# =====================================================================
+# REGLA: toda arista lleva sign, evidence y provenance. Sin excepción.
+
+edge_types:
+
+  # ---- Farmacológicas: drug -> mol -------------------------------
+  acts_on:
+    from: [drug]
+    to: [mol]
+    action:
+      enum: [agonista, agonista_parcial, agonista_inverso, antagonista,
+             modulador_alosterico_positivo, modulador_alosterico_negativo,
+             inhibidor, bloqueador, abridor, liberador, sustrato,
+             protonoforo, quelante, desconocido]
+    optional_fields:
+      affinity_ki_nm: "Ki en nM. Fuente preferida: base Ki del PDSP."
+      affinity_source: "pdsp | chembl | bindingdb | iuphar | publicacion"
+      assay_conc_um: "Concentración del ensayo. Si es >> concentración
+                      terapéutica, marcar relevance: dudosa."
+      therapeutic_relevance:
+        enum: [probable, dudosa, improbable, desconocida]
+      bias: "Sesgo de señalización, si aplica (p.ej. sesgo a proteína G)."
+      occupancy:
+        description: "AFINIDAD NO ES OCUPACIÓN. Un fármaco puede tener alta
+                      afinidad y ocupación baja a dosis terapéutica, que es
+                      exactamente lo que distingue a la clozapina en D2 y lo
+                      que hace posible el contraste del TOC iatrogénico.
+                      Sin este campo ese argumento no se puede codificar."
+        fields:
+          pct: "Porcentaje de ocupación."
+          pct_range: "[min, max] si se reporta rango."
+          at_dose: "Referencia a un id de dose_regimen."
+          method:
+            enum: [pet, spect, estimado_pk, in_vitro, desconocido]
+          refs: "Lista propia: la ocupación casi nunca viene del mismo
+                 estudio que la afinidad."
+
+  # ---- Señalización: mol -> mol ----------------------------------
+  signals_to:
+    from: [mol]
+    to: [mol]
+    action:
+      enum: [activa, inhibe, fosforila, defosforila, transcribe,
+             libera, requiere, andamia, transporta, degrada,
+             sensibiliza, desensibiliza]
+
+  # ---- Expresión: mol -> cell ------------------------------------
+  expressed_in:
+    from: [mol]
+    to: [cell]
+    optional_fields:
+      enrichment:
+        enum: [enriquecido, presente, escaso, ausente]
+      compartment:
+        enum: [somatico, dendritico, axonal, presinaptico, postsinaptico,
+               membrana_plasmatica, intracelular, extracelular]
+
+  # ---- Anatomía: cell -> circuit ---------------------------------
+  resides_in:
+    from: [cell]
+    to: [circuit]
+
+  projects_to:
+    from: [cell, circuit]
+    to: [circuit]
+    optional_fields:
+      neurotransmitter: "glutamato | GABA | dopamina | serotonina | ..."
+
+  # ---- Circuito: circuit -> circuit ------------------------------
+  modulates_circuit:
+    from: [circuit]
+    to: [circuit]
+    action:
+      enum: [excita, inhibe, desinhibe, modula, retroalimenta_negativo,
+             retroalimenta_positivo]
+
+  # ---- Función: circuit -> domain --------------------------------
+  implements:
+    from: [circuit]
+    to: [domain]
+
+  # ---- Clínica: domain -> pheno ----------------------------------
+  altered_in:
+    from: [domain, circuit, mol]
+    to: [pheno]
+    optional_fields:
+      direction:
+        enum: [aumentado, disminuido, desregulado, bidireccional]
+
+  # ---- Medición: bmk -> cualquiera -------------------------------
+  indexes:
+    from: [bmk]
+    to: [mol, cell, circuit, domain]
+    optional_fields:
+      biomarker_role:
+        description: "Taxonomía de Etkin et al. Distinción indispensable."
+        enum: [farmacodinamico,        # ¿tocó el blanco?
+               seleccion_pacientes,    # ¿a quién dárselo?
+               pronostico,             # ¿quién mejora, con cualquier cosa?
+               prescriptivo,           # ¿a quién le conviene ESTE y no otro?
+               diagnostico,
+               subrogado]
+
+  # ---- Ensayos ----------------------------------------------------
+  tested:
+    from: [trial]
+    to: [drug]
+
+  in_population:
+    from: [trial]
+    to: [pheno]
+
+  stratified_by:
+    from: [trial]
+    to: [bmk, pheno]
+
+  # ---- Capa espacial ---------------------------------------------
+  has_density:
+    from: [mol]
+    to: [spatialmap]
+    description: "Vincula un blanco molecular con su mapa de densidad medido
+                  por PET. Es lo que permite pasar de afinidad a mapa."
+    optional_fields:
+      column: "Columna en espacial/densidades.csv."
+
+  spans:
+    from: [circuit]
+    to: [parcel]
+    description: "Qué parcelas componen un circuito del modelo. Permite
+                  traducir entre la capa de circuitos (cualitativa, que
+                  usamos para razonar) y la espacial (cuantitativa, que
+                  usamos para medir)."
+    optional_fields:
+      weight: "Peso 0-1 si el circuito solo cubre parcialmente la parcela."
+
+  spatially_similar:
+    from: [drug, spatialmap]
+    to: [drug, spatialmap]
+    description: "Correlación entre dos mapas. NO se escribe a mano: la
+                  genera herramientas/mapa_predicho.py."
+    optional_fields:
+      rho: "Correlación de rangos."
+      p_spin: "Valor p contra nulos con autocorrelación espacial
+               preservada. SIN ESTE CAMPO la arista no es admisible:
+               correlacionar dos mapas cerebrales cualesquiera da
+               significancia con facilidad porque ambos tienen
+               autocorrelación espacial enorme. Un p sin nulo espacial
+               es ruido con decimales."
+      n_surrogates: "Número de mapas sustitutos usados."
+
+  # ---- Efecto clínico: drug -> pheno -----------------------------
+  treats:
+    from: [drug]
+    to: [pheno]
+    optional_fields:
+      effect_size: "Cohen's d o NNT, con el estadístico nombrado."
+      response_modifier: "ID de pheno tipo estratificador que modifica
+                          la magnitud o el signo de esta arista."
+      context: "Población o situación en que aplica. Un mismo fármaco
+                puede tratar un fenotipo en un contexto e inducirlo en
+                otro — ver 'induces'."
+
+  # ---- Fenotipo iatrogénico: drug -> pheno -----------------------
+  induces:
+    from: [drug]
+    to: [pheno]
+    description: "EL FÁRMACO CAUSA O EMPEORA EL FENOTIPO. Es la lesión
+                  farmacológica: el experimento más limpio disponible en
+                  humanos, porque la dirección causal está dada por el
+                  diseño y no por inferencia. Un fármaco que INDUCE X y
+                  otro que TRATA X, actuando sobre el mismo sistema en
+                  direcciones opuestas, es la mejor evidencia disponible
+                  de que ese sistema genera X.
+                  Casos canónicos: reserpina induce depresión; clozapina
+                  induce sintomatología obsesivo-compulsiva; levetiracetam
+                  induce irritabilidad y disforia."
+    optional_fields:
+      incidence: "Proporción afectada, si se conoce. Rango si es discutido."
+      onset:
+        enum: [agudo, semanas, meses, dosis_dependiente]
+      reversible_by: "Lista de IDs de drug que revierten el fenotipo
+                      inducido. Cada uno debe tener además su arista
+                      'treats' con context explícito."
+      dose_dependent: [true, false, desconocido]
+
+# =====================================================================
+# 3. CAMPOS OBLIGATORIOS EN TODA ARISTA
+# =====================================================================
+
+edge_required_fields:
+
+  sign:
+    description: "Signo del efecto sobre el destino. Sin esto el grafo es
+                  un dibujo, no un modelo."
+    enum: [+1, -1, 0, bidireccional, desconocido]
+
+  provenance:
+    description: "PROTECCIÓN CONTRA COMPLETITUD ILUSORIA. Distingue lo que
+                  una fuente afirma de lo que nosotros dedujimos. Nunca
+                  se mezclan ni se promueven de 'inferred' a 'sourced'."
+    enum: [sourced, inferred]
+
+  evidence:
+    required: [strength, kind, species, status]
+    fields:
+
+      strength:
+        A: "Replicado en muestras independientes; metaanálisis consistente;
+            estructura cristalográfica con confirmación funcional; knockout
+            con fenotipo replicado."
+        B: "Un estudio bien potenciado, no replicado aún."
+        C: "Muestra pequeña, abierto, no controlado, serie de casos,
+            preclínico único."
+        D: "Reporte de caso, anécdota, registro histórico, o inferencia
+            propia. Se acepta — pero se marca."
+
+      kind:
+        enum: [estructural, union_radioligando, funcional_in_vitro,
+               genetico, preclinico_in_vivo, fisiologia_humana,
+               observacional, rct, metaanalisis, historico, inferido]
+
+      species:
+        enum: [humano, roedor, primate_no_humano, in_vitro, mixto]
+
+      status:
+        description: "Estado NETO tras sopesar soporte y refutación.
+                      Ninguna base de datos de vías registra 'refutado'.
+                      Esta sí. Ejemplo canónico: asimetría alfa frontal
+                      en depresión — décadas de evidencia C, refutada
+                      por estudios grandes.
+                      ATENCIÓN a los tres últimos: no son sinónimos.
+                      Confundirlos es el error más caro del proyecto,
+                      porque 'nunca se probó' es una oportunidad de
+                      investigación y 'se probó y no hay efecto' es un
+                      resultado. Una arista con sign: 0 SIEMPRE tiene que
+                      declarar cuál de los dos es."
+        enum: [establecido,
+               probable,
+               propuesto,
+               contestado,
+               refutado,           # se afirmó, se puso a prueba, se cayó
+               no_probado,         # nadie lo ha estudiado. Hueco, no dato
+               probado_sin_efecto] # se estudió con potencia adecuada: nulo real
+
+      refs:
+        description: "Lista. Formato preferido: PMID:xxxxx o DOI:xx.xxxx/..."
+      counter_refs:
+        description: "Referencias que REFUTAN o no replican esta arista.
+                      Campo de primera clase, no una nota al pie."
+
+edge_optional_fields:
+
+  state_dependence:
+    description: "EL CAMPO QUE HACE POSIBLE LA MEDICINA DE PRECISIÓN.
+                  ¿El signo del efecto cambia según el estado basal?
+                  Ejemplo: ketamina reduce la negatividad de discordancia
+                  en quien la tiene grande y la aumenta en quien la tiene
+                  pequeña (efecto disordinal, Cecchi et al.). Un análisis
+                  que asuma linealidad encuentra cero."
+    fields:
+      is_state_dependent: [true, false, desconocido]
+      shape:
+        enum: [monotonico, disordinal, en_U, en_U_invertida, umbral]
+      conditioning_node: "ID del nodo cuyo estado basal determina el signo."
+
+  cell_type_specificity:
+    description: "Si el efecto depende del tipo celular. Referencia
+                  obligada: TrkB en interneuronas de parvalbúmina
+                  desinhibe piramidales — efecto de red opuesto al
+                  esperado por el efecto celular directo."
+
+  temporal:
+    enum: [agudo, subagudo, cronico, unica_dosis_duradero, retardado]
+
+  dose_regimen:
+    description: "Régimen bajo el que aplica esta arista. Varios efectos
+                  cambian de signo con la dosis: dosis baja de quetiapina
+                  es sedante y dosis alta es antipsicótica; buprenorfina
+                  en dosis ultrabajas es antidepresiva y en dosis plenas
+                  es otra cosa. Sin este campo, dos aristas contradictorias
+                  del mismo fármaco parecen un error de captura."
+    fields:
+      id: "Identificador corto para referenciarlo desde 'occupancy.at_dose'."
+      value: "Cantidad con unidad, p. ej. '300 mg/d'."
+      range: "[min, max] si es rango terapéutico."
+      route:
+        enum: [oral, iv, im, sc, intranasal, transdermica, otra]
+      duration: "Tiempo de exposición, si es relevante."
+
+  confounders:
+    description: "Lista libre. P. ej.: 'anestesia general', 'estado de
+                  vigilancia', 'medicación concomitante'."
+
+# =====================================================================
+# 4. CONVENCIONES DE TRABAJO
+# =====================================================================
+
+conventions:
+  - "Ninguna arista entra sin refs. Si la referencia es débil, se marca
+     strength: D — pero se cita."
+  - "Las aristas provenance: inferred nunca se convierten en sourced.
+     Si después aparece una fuente, se crea una arista nueva."
+  - "Un contraste sin explicación candidata es un contraste válido.
+     'No sabemos por qué' es un dato, no un hueco que rellenar."
+  - "La matriz fármaco × blanco NO se mantiene a mano: se genera desde
+     las aristas acts_on."
+  - "Primero se completan casos clínicos de arriba abajo; las cascadas
+     moleculares se llenan cuando se necesiten, no por completitud."

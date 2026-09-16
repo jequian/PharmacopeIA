@@ -1,0 +1,479 @@
+# =====================================================================
+# SEMILLA 02 — TOC iatrogénico: el mismo sistema, dos direcciones
+# =====================================================================
+# Por qué este caso vale más que un ensayo grande:
+#
+# 1. Es una LESIÓN FARMACOLÓGICA. La dirección causal la da el diseño
+#    (se administró el fármaco, apareció el fenotipo, se retiró o se
+#    contrarrestó, remitió) y no una inferencia estadística.
+#
+# 2. Contiene un EFECTO DISORDINAL clínico completo: la modulación D2/D3
+#    TRATA el TOC en un contexto (potenciación con antipsicótico en TOC
+#    con tics) y su patrón opuesto lo INDUCE en otro (bloqueo potente
+#    5-HT2 con baja ocupación D2 en esquizofrenia). No es contradicción:
+#    es dependencia de estado.
+#
+# 3. La reversión con un agonista PARCIAL cierra el argumento. Un agonista
+#    parcial se comporta como agonista donde el tono es bajo y como
+#    antagonista donde es alto. Si revierte, el tono basal era bajo.
+#
+# PROVENIENCIA: redactado por Claude desde conocimiento previo, sin
+# búsqueda. Toda referencia dice PENDIENTE. La literatura de reversión
+# con cariprazina es de reportes de caso — evidencia C/D, y así está
+# marcada. No subir de nivel sin verificar.
+# =====================================================================
+
+meta:
+  schema_version: "0.1"
+  seed_id: "seed-02-toc-iatrogenico"
+  verified: false
+
+# ---------------------------------------------------------------------
+phenotypes:
+  - id: pheno:toc
+    name: "Trastorno obsesivo-compulsivo"
+    kind: diagnostico
+
+  - id: pheno:toc-con-tics
+    name: "TOC con tics o antecedente de trastorno por tics"
+    kind: estratificador
+    parent_pheno: pheno:toc
+    notes: "El estratificador mejor replicado en TOC: predice mejor
+            respuesta a potenciación con antipsicótico. La observación es
+            más firme que su explicación mecanística."
+
+  - id: pheno:toc-sin-tics
+    name: "TOC sin tics"
+    kind: estratificador
+    parent_pheno: pheno:toc
+
+  - id: pheno:toc-acumulamiento
+    name: "TOC con predominio de acumulamiento"
+    kind: estratificador
+    parent_pheno: pheno:toc
+    notes: "Responde mal a ISRS. Segundo estratificador clásico."
+
+  - id: pheno:soc-inducida
+    name: "Sintomatología obsesivo-compulsiva inducida por antipsicótico"
+    kind: dimension_sintomatica
+    notes: "Fenotipo iatrogénico. Se distingue del TOC primario por
+            aparición temporal tras la introducción del fármaco y por
+            remisión al retirarlo o contrarrestarlo."
+
+  - id: pheno:esquizofrenia
+    name: "Esquizofrenia"
+    kind: diagnostico
+
+# ---------------------------------------------------------------------
+cells:
+  - id: cell:msn-directa
+    name: "Neurona espinosa mediana de la vía directa (D1)"
+    lineage: neurona_excitatoria
+    markers: [DRD1, SP]
+  - id: cell:msn-indirecta
+    name: "Neurona espinosa mediana de la vía indirecta (D2)"
+    lineage: neurona_excitatoria
+    markers: [DRD2, ENK]
+
+circuits:
+  - id: circuit:cstc-orbitofrontal
+    name: "Circuito corticoestriatotalamocortical orbitofrontal"
+    kind: red
+  - id: circuit:estriado-ventral
+    name: "Estriado ventral"
+    kind: subregion
+  - id: circuit:corteza-orbitofrontal
+    name: "Corteza orbitofrontal"
+    kind: region
+
+domains:
+  - id: domain:control-cognitivo
+    name: "Control cognitivo"
+    parent: sistemas_cognitivos
+  - id: domain:respuesta-amenaza-potencial
+    name: "Respuesta a amenaza potencial"
+    parent: valencia_negativa
+
+biomarkers:
+  - id: bmk:ocupacion-d2-pet
+    name: "Ocupación de receptor D2 por PET"
+    modality: pet
+    scalability: solo_investigacion
+    notes: "Es la medida que convertiría la hipótesis de este caso en
+            prueba. Ocupación D2 baja debería predecir aparición de
+            sintomatología obsesiva."
+
+# ---------------------------------------------------------------------
+trials:
+  - id: trial:soc-clozapina-series
+    name: "Series y estudios transversales de sintomatología obsesiva bajo clozapina"
+    design: serie_de_casos
+    outcome: positivo
+    population: "Esquizofrenia bajo clozapina"
+    notes: "Las cifras de incidencia reportadas varían ampliamente entre
+            series. VERIFICAR el rango antes de citar cualquier número:
+            no lo incluyo porque no confío en mi memoria del dato."
+    refs: ["PENDIENTE"]
+
+  - id: trial:cariprazina-soc-casos
+    name: "Reportes de caso de reversión de sintomatología obsesiva con cariprazina"
+    design: reporte_de_caso
+    outcome: positivo
+    n: "unidades"
+    notes: "Evidencia D. Sin control, sin ciego, con sesgo de publicación
+            máximo: los casos que no mejoran no se publican."
+    refs: ["PENDIENTE"]
+
+  - id: trial:antipsicotico-potenciacion-toc
+    name: "Potenciación con antipsicótico en TOC resistente a ISRS"
+    design: metaanalisis
+    outcome: mixto
+    notes: "Beneficio global modesto; el subgrupo con tics concentra la
+            señal. VERIFICAR qué metaanálisis y qué magnitud."
+    refs: ["PENDIENTE"]
+
+# ---------------------------------------------------------------------
+edges:
+
+  # ===== Perfil farmacológico del inductor =========================
+  - type: acts_on
+    from: drug:clozapina
+    to: mol:5HT2A
+    action: antagonista
+    sign: -1
+    provenance: sourced
+    evidence: {strength: A, kind: union_radioligando, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+    affinity_source: pdsp
+    notes: "Afinidad exacta pendiente de descargar de la base Ki del PDSP."
+
+  - type: acts_on
+    from: drug:clozapina
+    to: mol:5HT2C
+    action: antagonista
+    sign: -1
+    provenance: sourced
+    evidence: {strength: A, kind: union_radioligando, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  - type: acts_on
+    from: drug:clozapina
+    to: mol:D2
+    action: antagonista
+    sign: -1
+    provenance: sourced
+    evidence: {strength: A, kind: union_radioligando, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+    therapeutic_relevance: probable
+    notes: "CLAVE DEL CASO: ocupación D2 baja a dosis terapéuticas, muy
+            por debajo del umbral de los antipsicóticos típicos. La
+            combinación 'bloqueo 5-HT2 potente + ocupación D2 baja' es
+            lo que distingue a este perfil."
+
+  - type: acts_on
+    from: drug:clozapina
+    to: mol:M1
+    action: agonista_parcial
+    sign: +1
+    provenance: sourced
+    evidence: {strength: B, kind: funcional_in_vitro, species: in_vitro,
+               status: probable, refs: ["PENDIENTE"]}
+    notes: "Perfil muscarínico complejo y singular en la clase. Confusor
+            potencial de toda la hipótesis dopaminérgica de este caso."
+
+  # ===== Perfil del reversor =======================================
+  - type: acts_on
+    from: drug:cariprazina
+    to: mol:D3
+    action: agonista_parcial
+    sign: bidireccional
+    provenance: sourced
+    evidence: {strength: A, kind: union_radioligando, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+    state_dependence:
+      is_state_dependent: true
+      shape: disordinal
+      conditioning_node: circuit:estriado-ventral
+    notes: "Preferencia por D3 sobre D2 — el rasgo que distingue a la
+            cariprazina de aripiprazol y brexpiprazol. Un agonista parcial
+            actúa como agonista donde el tono dopaminérgico es bajo y como
+            antagonista donde es alto: por eso 'sign: bidireccional' no es
+            una evasión sino la descripción correcta."
+
+  - type: acts_on
+    from: drug:cariprazina
+    to: mol:D2
+    action: agonista_parcial
+    sign: bidireccional
+    provenance: sourced
+    evidence: {strength: A, kind: union_radioligando, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  - type: acts_on
+    from: drug:aripiprazol
+    to: mol:D2
+    action: agonista_parcial
+    sign: bidireccional
+    provenance: sourced
+    evidence: {strength: A, kind: union_radioligando, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  - type: acts_on
+    from: drug:risperidona
+    to: mol:D2
+    action: antagonista
+    sign: -1
+    provenance: sourced
+    evidence: {strength: A, kind: union_radioligando, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  # ===== Expresión y circuito ======================================
+  - type: expressed_in
+    from: mol:D2
+    to: cell:msn-indirecta
+    sign: 0
+    provenance: sourced
+    evidence: {strength: A, kind: genetico, species: mixto,
+               status: establecido, refs: ["PENDIENTE"]}
+    enrichment: enriquecido
+
+  - type: expressed_in
+    from: mol:D3
+    to: cell:msn-indirecta
+    sign: 0
+    provenance: sourced
+    evidence: {strength: B, kind: genetico, species: roedor,
+               status: probable, refs: ["PENDIENTE"]}
+    enrichment: presente
+    notes: "D3 se enriquece en estriado VENTRAL frente a dorsal. Esa
+            distribución diferencial es la explicación candidata de por
+            qué cariprazina se comportaría distinto de aripiprazol."
+
+  - type: resides_in
+    from: cell:msn-indirecta
+    to: circuit:estriado-ventral
+    sign: 0
+    provenance: sourced
+    evidence: {strength: A, kind: estructural, species: mixto,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  - type: modulates_circuit
+    from: circuit:estriado-ventral
+    to: circuit:corteza-orbitofrontal
+    action: retroalimenta_negativo
+    sign: -1
+    provenance: sourced
+    evidence: {strength: B, kind: preclinico_in_vivo, species: mixto,
+               status: probable, refs: ["PENDIENTE"]}
+
+  - type: implements
+    from: circuit:cstc-orbitofrontal
+    to: domain:control-cognitivo
+    sign: 0
+    provenance: sourced
+    evidence: {strength: B, kind: fisiologia_humana, species: humano,
+               status: probable, refs: ["PENDIENTE"]}
+
+  - type: altered_in
+    from: circuit:cstc-orbitofrontal
+    to: pheno:toc
+    sign: +1
+    provenance: sourced
+    evidence: {strength: A, kind: fisiologia_humana, species: humano,
+               status: establecido, refs: ["PENDIENTE"]}
+    direction: aumentado
+    notes: "Hiperactividad orbitofrontal y del cíngulo anterior es de los
+            hallazgos de neuroimagen más replicados en TOC."
+
+  # ===== ARISTAS IATROGÉNICAS — el núcleo del caso =================
+  - type: induces
+    from: drug:clozapina
+    to: pheno:soc-inducida
+    sign: +1
+    provenance: sourced
+    evidence:
+      strength: C
+      kind: observacional
+      species: humano
+      status: probable
+      refs: ["PENDIENTE"]
+      counter_refs: ["PENDIENTE — existe discusión sobre si es inducción
+                     verdadera o desenmascaramiento de sintomatología
+                     obsesiva preexistente que la psicosis ocultaba"]
+    onset: semanas
+    dose_dependent: desconocido
+    reversible_by: [drug:cariprazina, drug:aripiprazol]
+    confounders: ["Comorbilidad obsesiva preexistente en esquizofrenia",
+                  "Politerapia", "Cambio de fase de la psicosis"]
+    notes: "La objeción de desenmascaramiento es seria y hay que
+            registrarla: si la clozapina simplemente permite que emerja
+            sintomatología que ya estaba, la arista no es causal."
+
+  - type: induces
+    from: drug:olanzapina
+    to: pheno:soc-inducida
+    sign: +1
+    provenance: sourced
+    evidence: {strength: C, kind: observacional, species: humano,
+               status: propuesto, refs: ["PENDIENTE"]}
+    notes: "Mismo patrón: bloqueo 5-HT2 potente con ocupación D2 moderada."
+
+  - type: induces
+    from: drug:quetiapina
+    to: pheno:soc-inducida
+    sign: +1
+    provenance: sourced
+    evidence: {strength: D, kind: observacional, species: humano,
+               status: propuesto, refs: ["PENDIENTE"]}
+
+  # ===== Reversión y tratamiento ===================================
+  - type: treats
+    from: drug:cariprazina
+    to: pheno:soc-inducida
+    sign: +1
+    provenance: sourced
+    evidence:
+      strength: D
+      kind: observacional
+      species: humano
+      status: propuesto
+      refs: ["PENDIENTE"]
+    context: "Coadyuvante en paciente con esquizofrenia bajo clozapina que
+              desarrolló sintomatología obsesiva."
+    temporal: subagudo
+    notes: "Reportes de caso. Sesgo de publicación máximo."
+
+  - type: treats
+    from: drug:aripiprazol
+    to: pheno:soc-inducida
+    sign: +1
+    provenance: sourced
+    evidence: {strength: C, kind: observacional, species: humano,
+               status: propuesto, refs: ["PENDIENTE"]}
+    context: "Potenciación sobre clozapina."
+
+  - type: treats
+    from: drug:risperidona
+    to: pheno:toc-con-tics
+    sign: +1
+    provenance: sourced
+    evidence: {strength: B, kind: metaanalisis, species: humano,
+               status: probable, refs: ["PENDIENTE"]}
+    context: "Potenciación sobre ISRS en TOC resistente."
+    response_modifier: pheno:toc-con-tics
+    notes: "AQUÍ ESTÁ LA PARADOJA APARENTE: el bloqueo D2 TRATA aquí y el
+            perfil con ocupación D2 baja INDUCE allá."
+
+  - type: treats
+    from: drug:risperidona
+    to: pheno:toc-sin-tics
+    sign: 0
+    provenance: sourced
+    evidence: {strength: C, kind: metaanalisis, species: humano,
+               status: probado_sin_efecto, refs: ["PENDIENTE"]}
+    context: "Potenciación sobre ISRS."
+    notes: "Beneficio marginal o ausente sin tics. Se estudió: es nulo real,
+            no hueco. La diferencia con la arista anterior ES el estratificador."
+
+  - type: treats
+    from: drug:clomipramina
+    to: pheno:toc
+    sign: +1
+    provenance: sourced
+    evidence: {strength: A, kind: metaanalisis, species: humano,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  - type: treats
+    from: drug:fluoxetina
+    to: pheno:toc-acumulamiento
+    sign: 0
+    provenance: sourced
+    evidence: {strength: C, kind: observacional, species: humano,
+               status: probado_sin_efecto, refs: ["PENDIENTE"]}
+    notes: "Respuesta pobre. Otro estratificador registrado."
+
+  # ===== Medición ==================================================
+  - type: indexes
+    from: bmk:ocupacion-d2-pet
+    to: mol:D2
+    sign: 0
+    provenance: sourced
+    evidence: {strength: A, kind: fisiologia_humana, species: humano,
+               status: establecido, refs: ["PENDIENTE"]}
+    biomarker_role: farmacodinamico
+
+  # ===== Hipótesis nuestra =========================================
+  - type: signals_to
+    from: mol:5HT2C
+    to: mol:D2
+    sign: -1
+    provenance: inferred
+    evidence: {strength: D, kind: inferido, species: mixto,
+               status: propuesto, refs: []}
+    notes: "INFERENCIA NUESTRA. El antagonismo 5-HT2C desinhibe la
+            liberación de dopamina en corteza y estriado. Si es cierto,
+            complica el caso: la clozapina AUMENTARÍA tono dopaminérgico
+            por esta vía, en contra de la hipótesis de tono bajo. Lo dejo
+            registrado precisamente porque contradice nuestra explicación
+            preferida. No borrar."
+
+# ---------------------------------------------------------------------
+contrasts:
+  - id: contrast:d2-disordinal-toc
+    name: "Modulación D2/D3: trata el TOC en un contexto, lo induce en otro"
+    shared_mechanism: mol:D2
+    discordant_outcome: "La potenciación con antagonista D2 mejora el TOC
+                         con tics. Un perfil con bloqueo 5-HT2 potente y
+                         ocupación D2 baja induce sintomatología obsesiva
+                         en esquizofrenia. Un agonista parcial D3/D2
+                         revierte esa inducción. El signo del efecto
+                         depende del estado basal del circuito, no del
+                         fármaco."
+    resolved: no
+    members:
+      - drug: drug:risperidona
+        outcome: "Trata TOC con tics; marginal sin tics"
+        distinguishing_features: [mol:D2]
+      - drug: drug:clozapina
+        outcome: "Induce sintomatología obsesiva"
+        distinguishing_features: [mol:5HT2A, mol:5HT2C, mol:M1]
+      - drug: drug:cariprazina
+        outcome: "Revierte la inducción (reportes de caso)"
+        distinguishing_features: [mol:D3]
+      - drug: drug:aripiprazol
+        outcome: "Revierte la inducción; también potencia en TOC"
+        distinguishing_features: [mol:D2]
+    candidate_explanations:
+      - id: exp-1
+        text: "Dependencia de estado. El tono dopaminérgico basal del
+               estriado ventral determina el signo. Donde el tono es alto,
+               bloquear ayuda; donde es bajo, bloquear daña y el agonismo
+               parcial corrige. Es el mismo patrón disordinal descrito
+               para ketamina y negatividad de discordancia."
+        testable: "Ocupación D2 por PET antes y durante la aparición de la
+                   sintomatología obsesiva. Predicción: ocupación baja
+                   predice inducción."
+        status: propuesto
+      - id: exp-2
+        text: "Lo que importa es la RAZÓN entre bloqueo 5-HT2 y ocupación
+               D2, no ninguno de los dos por separado."
+        testable: "Ordenar los antipsicóticos por esa razón y correlacionar
+                   con incidencia reportada de sintomatología obsesiva."
+        status: propuesto
+        notes: "Contrastable HOY con la base Ki del PDSP más literatura de
+                ocupación. Es el análisis más barato de todo el proyecto."
+      - id: exp-3
+        text: "La selectividad D3 de la cariprazina es lo relevante, por
+               el enriquecimiento de D3 en estriado ventral."
+        testable: "Comparar tasas de reversión entre cariprazina,
+                   aripiprazol y brexpiprazol."
+        status: propuesto
+      - id: exp-4
+        text: "No hay inducción: la clozapina desenmascara sintomatología
+               obsesiva preexistente al reducir la psicosis, y la mejoría
+               con el segundo antipsicótico es regresión a la media más
+               sesgo de publicación de reportes de caso."
+        testable: "Cohortes con evaluación obsesiva estructurada ANTES de
+                   iniciar clozapina."
+        status: propuesto
+        notes: "HIPÓTESIS NULA. Descartar primero. Es la más probable."

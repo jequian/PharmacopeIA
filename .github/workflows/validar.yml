@@ -1,0 +1,27 @@
+name: validar grafo
+
+on: [push, pull_request]
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml numpy
+      - name: Estructura del grafo
+        run: |
+          python3 herramientas/validar.py esquema/ontologia.yaml \
+                  datos/*.yaml --auditoria
+      - name: Rechazar identificadores inventados
+        run: |
+          # Un PMID debe tener 7-9 dígitos; un DOI debe empezar por 10.
+          ! grep -rEn 'PMID:[0-9]{0,6}[^0-9]|PMID:[0-9]{10,}' datos/ || \
+            (echo "PMID con formato imposible" && exit 1)
+          ! grep -rEn 'DOI:(?!10\.)' -P datos/ || \
+            (echo "DOI que no empieza por 10." && exit 1)
+      - name: El visor se construye
+        run: |
+          cd herramientas && python3 construir_visor.py || true

@@ -1,0 +1,416 @@
+# =====================================================================
+# SEMILLA 01 — Contraste: bloqueadores de canales de sodio
+# =====================================================================
+# Pregunta que motiva el caso: si el bloqueo de canales de sodio
+# dependientes de voltaje explicara el efecto afectivo, todos los
+# bloqueadores servirían para lo mismo. No lo hacen. El contraste es el
+# objeto de estudio, no un ruido a explicar.
+#
+# ADVERTENCIA DE PROVENIENCIA: este archivo lo redactó Claude a partir de
+# conocimiento previo, sin búsqueda bibliográfica. Los PMID/DOI incluidos
+# son de memoria y DEBEN verificarse antes de usarse. Las aristas con
+# provenance: inferred son razonamiento, no hallazgos.
+# =====================================================================
+
+meta:
+  schema_version: "0.1"
+  seed_id: "seed-01-bloqueadores-sodio"
+  verified: false
+
+# ---------------------------------------------------------------------
+# NODOS: fármacos
+# ---------------------------------------------------------------------
+drugs:
+  - id: drug:lamotrigina
+    name: Lamotrigina
+    class: anticrisis
+    approval_status: aprobado
+    notes: "Aprobada para mantenimiento en trastorno bipolar, con efecto
+            dirigido sobre todo a prevención del polo depresivo. Débil en
+            manía aguda. Los ensayos en depresión bipolar AGUDA fueron en
+            gran medida negativos — el efecto establecido es de
+            mantenimiento, distinción que la literatura secundaria
+            confunde con frecuencia."
+
+  - id: drug:carbamazepina
+    name: Carbamazepina
+    class: anticrisis
+    approval_status: aprobado
+    notes: "Eficacia en manía aguda. Sin señal antidepresiva establecida.
+            Perfil de efecto OPUESTO a lamotrigina pese a compartir el
+            mecanismo nominal."
+
+  - id: drug:oxcarbazepina
+    name: Oxcarbazepina
+    class: anticrisis
+    approval_status: aprobado_otra_indicacion
+
+  - id: drug:fenitoina
+    name: Fenitoína
+    class: anticrisis
+    approval_status: aprobado_otra_indicacion
+    notes: "Bloqueador de sodio prototípico. Señal afectiva marginal;
+            existen ensayos pequeños antiguos en manía cuyo peso es bajo."
+
+  - id: drug:lacosamida
+    name: Lacosamida
+    class: anticrisis
+    approval_status: aprobado_otra_indicacion
+    notes: "CONTROL NEGATIVO IDEAL. Actúa sobre inactivación LENTA del
+            canal de sodio, no sobre la rápida. Sin señal afectiva."
+
+  - id: drug:valproato
+    name: Valproato
+    class: estabilizador
+    approval_status: aprobado
+    notes: "Eficaz en manía. Se agrupa con los anteriores por costumbre,
+            pero su perfil molecular es completamente distinto."
+
+  - id: drug:topiramato
+    name: Topiramato
+    class: anticrisis
+    approval_status: aprobado_otra_indicacion
+    notes: "Otro control negativo: fracasó en manía pese a múltiples
+            mecanismos plausibles."
+
+# ---------------------------------------------------------------------
+# NODOS: moleculares
+# ---------------------------------------------------------------------
+molecules:
+  - id: mol:nav-rapida
+    name: "Canal Na+ dependiente de voltaje — inactivación rápida"
+    subtype: canal_ionico
+    gene: "SCN1A/2A/3A/8A"
+
+  - id: mol:nav-lenta
+    name: "Canal Na+ dependiente de voltaje — inactivación lenta"
+    subtype: canal_ionico
+
+  - id: mol:hcn1
+    name: "Canal HCN1 (corriente Ih)"
+    subtype: canal_ionico
+    gene: HCN1
+    notes: "Nodo clave del contraste. Corriente dendrítica que controla
+            excitabilidad de dendritas apicales."
+
+  - id: mol:cav-npq
+    name: "Canal Ca2+ tipo N y P/Q"
+    subtype: canal_ionico
+
+  - id: mol:glutamato-presinaptico
+    name: "Liberación presináptica de glutamato"
+    subtype: segundo_mensajero
+
+  - id: mol:adenosina-a1
+    name: "Receptor de adenosina A1"
+    subtype: receptor_gpcr
+
+  - id: mol:hdac
+    name: "Histona desacetilasa"
+    subtype: enzima
+
+  - id: mol:gsk3b
+    name: "GSK-3 beta"
+    subtype: cinasa
+
+  - id: mol:gaba-turnover
+    name: "Recambio de GABA"
+    subtype: segundo_mensajero
+
+  - id: mol:bdnf
+    name: "BDNF"
+    subtype: neurotrofina
+
+  - id: mol:trkb
+    name: "TrkB (NTRK2)"
+    subtype: receptor_tirosina_cinasa
+    gene: NTRK2
+
+# ---------------------------------------------------------------------
+# NODOS: celular y circuito (mínimos para este caso)
+# ---------------------------------------------------------------------
+cells:
+  - id: cell:piramidal-ca1
+    name: "Neurona piramidal de CA1"
+    lineage: neurona_excitatoria
+
+circuits:
+  - id: circuit:ca1-hipocampo
+    name: "CA1 del hipocampo"
+    kind: subregion
+  - id: circuit:eje-hha
+    name: "Eje hipotálamo-hipófisis-suprarrenal"
+    kind: eje_neuroendocrino
+
+# ---------------------------------------------------------------------
+# NODOS: fenotipos
+# ---------------------------------------------------------------------
+phenotypes:
+  - id: pheno:mania-aguda
+    name: "Manía aguda"
+    kind: diagnostico
+  - id: pheno:depresion-bipolar-aguda
+    name: "Depresión bipolar, fase aguda"
+    kind: diagnostico
+  - id: pheno:bipolar-mantenimiento-polo-depresivo
+    name: "Prevención de recaída depresiva en trastorno bipolar"
+    kind: curso_clinico
+
+# ---------------------------------------------------------------------
+# ARISTAS
+# ---------------------------------------------------------------------
+edges:
+
+  # ===== El mecanismo COMPARTIDO — el que no explica nada ==========
+  - type: acts_on
+    from: drug:lamotrigina
+    to: mol:nav-rapida
+    action: bloqueador
+    sign: -1
+    provenance: sourced
+    evidence: {strength: A, kind: funcional_in_vitro, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+    temporal: agudo
+    notes: "Bloqueo dependiente de uso."
+
+  - type: acts_on
+    from: drug:carbamazepina
+    to: mol:nav-rapida
+    action: bloqueador
+    sign: -1
+    provenance: sourced
+    evidence: {strength: A, kind: funcional_in_vitro, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  - type: acts_on
+    from: drug:fenitoina
+    to: mol:nav-rapida
+    action: bloqueador
+    sign: -1
+    provenance: sourced
+    evidence: {strength: A, kind: funcional_in_vitro, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  - type: acts_on
+    from: drug:lacosamida
+    to: mol:nav-lenta
+    action: bloqueador
+    sign: -1
+    provenance: sourced
+    evidence: {strength: A, kind: funcional_in_vitro, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+    notes: "Mecanismo DISTINTO al de los anteriores. Vale como control."
+
+  # ===== Lo que distingue a lamotrigina ============================
+  - type: acts_on
+    from: drug:lamotrigina
+    to: mol:hcn1
+    action: modulador_alosterico_positivo
+    sign: +1
+    provenance: sourced
+    evidence:
+      strength: B
+      kind: fisiologia_humana
+      species: roedor
+      status: probable
+      refs: ["PMID:12118259"]
+    cell_type_specificity: "Dendritas apicales de piramidales de CA1."
+    notes: "VERIFICAR el PMID. Poolos, Migliore & Johnston, Nat Neurosci
+            2002. Potenciación de Ih dendrítica reduce excitabilidad
+            dendrítica y propensión a descarga en ráfaga. Es el único
+            mecanismo de la lista que actúa sobre el MISMO compartimento
+            donde el estrés crónico produce remodelación."
+
+  - type: acts_on
+    from: drug:lamotrigina
+    to: mol:glutamato-presinaptico
+    action: inhibidor
+    sign: -1
+    provenance: sourced
+    evidence: {strength: B, kind: preclinico_in_vivo, species: roedor,
+               status: probable, refs: ["PENDIENTE"]}
+
+  - type: acts_on
+    from: drug:lamotrigina
+    to: mol:cav-npq
+    action: bloqueador
+    sign: -1
+    provenance: sourced
+    evidence: {strength: C, kind: funcional_in_vitro, species: in_vitro,
+               status: propuesto, refs: ["PENDIENTE"]}
+
+  # ===== Lo que distingue a carbamazepina =========================
+  - type: acts_on
+    from: drug:carbamazepina
+    to: mol:adenosina-a1
+    action: antagonista
+    sign: -1
+    provenance: sourced
+    evidence: {strength: C, kind: union_radioligando, species: in_vitro,
+               status: propuesto, refs: ["PENDIENTE"]}
+
+  # ===== Valproato: perfil ajeno al grupo =========================
+  - type: acts_on
+    from: drug:valproato
+    to: mol:hdac
+    action: inhibidor
+    sign: -1
+    provenance: sourced
+    evidence: {strength: A, kind: funcional_in_vitro, species: in_vitro,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  - type: acts_on
+    from: drug:valproato
+    to: mol:gsk3b
+    action: inhibidor
+    sign: -1
+    provenance: sourced
+    evidence: {strength: B, kind: funcional_in_vitro, species: in_vitro,
+               status: contestado, refs: ["PENDIENTE"],
+               counter_refs: ["PENDIENTE — la relevancia a concentraciones
+                              terapéuticas está discutida"]}
+    therapeutic_relevance: dudosa
+
+  - type: acts_on
+    from: drug:valproato
+    to: mol:gaba-turnover
+    action: agonista
+    sign: +1
+    provenance: sourced
+    evidence: {strength: B, kind: preclinico_in_vivo, species: roedor,
+               status: probable, refs: ["PENDIENTE"]}
+
+  # ===== Expresión y circuito =====================================
+  - type: expressed_in
+    from: mol:hcn1
+    to: cell:piramidal-ca1
+    sign: 0
+    provenance: sourced
+    evidence: {strength: A, kind: genetico, species: roedor,
+               status: establecido, refs: ["PENDIENTE"]}
+    enrichment: enriquecido
+    compartment: dendritico
+
+  - type: resides_in
+    from: cell:piramidal-ca1
+    to: circuit:ca1-hipocampo
+    sign: 0
+    provenance: sourced
+    evidence: {strength: A, kind: estructural, species: mixto,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  # ===== Efecto clínico ===========================================
+  - type: treats
+    from: drug:lamotrigina
+    to: pheno:bipolar-mantenimiento-polo-depresivo
+    sign: +1
+    provenance: sourced
+    evidence: {strength: A, kind: metaanalisis, species: humano,
+               status: establecido, refs: ["PENDIENTE"]}
+    temporal: cronico
+
+  - type: treats
+    from: drug:lamotrigina
+    to: pheno:mania-aguda
+    sign: 0
+    provenance: sourced
+    evidence: {strength: B, kind: rct, species: humano,
+               status: probado_sin_efecto, refs: ["PENDIENTE"]}
+    notes: "Signo cero con estado 'probado_sin_efecto': se estudió y no hubo
+            efecto. Distinto de la arista de lacosamida, que es 'no_probado'.
+            La ausencia de efecto es dato; la ausencia de estudio es hueco."
+
+  - type: treats
+    from: drug:carbamazepina
+    to: pheno:mania-aguda
+    sign: +1
+    provenance: sourced
+    evidence: {strength: A, kind: metaanalisis, species: humano,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  - type: treats
+    from: drug:valproato
+    to: pheno:mania-aguda
+    sign: +1
+    provenance: sourced
+    evidence: {strength: A, kind: metaanalisis, species: humano,
+               status: establecido, refs: ["PENDIENTE"]}
+
+  - type: treats
+    from: drug:lacosamida
+    to: pheno:mania-aguda
+    sign: 0
+    provenance: inferred
+    evidence: {strength: D, kind: inferido, species: humano,
+               status: no_probado, refs: []}
+    notes: "Hueco explícito, no resultado negativo. Es precisamente el
+            experimento que resolvería el contraste."
+
+  # ===== Hipótesis nuestra, marcada como tal ======================
+  - type: signals_to
+    from: mol:hcn1
+    to: mol:bdnf
+    sign: desconocido
+    provenance: inferred
+    evidence: {strength: D, kind: inferido, species: mixto,
+               status: propuesto, refs: []}
+    notes: "INFERENCIA NUESTRA, sin soporte. Hipótesis: la reducción de
+            excitabilidad dendrítica en CA1 podría relacionarse con
+            plasticidad dependiente de actividad. No promover a sourced
+            sin evidencia directa."
+
+# ---------------------------------------------------------------------
+# EL CONTRASTE
+# ---------------------------------------------------------------------
+contrasts:
+  - id: contrast:bloqueadores-sodio
+    name: "Bloqueadores de canales de sodio con desenlace afectivo discordante"
+    shared_mechanism: mol:nav-rapida
+    discordant_outcome: "Lamotrigina previene recaída depresiva y es débil
+                         en manía. Carbamazepina y valproato son eficaces en
+                         manía y sin señal antidepresiva. Fenitoína,
+                         lacosamida y topiramato no muestran señal afectiva
+                         relevante. El bloqueo de sodio no es suficiente ni
+                         necesario para el efecto afectivo."
+    resolved: no
+    members:
+      - drug: drug:lamotrigina
+        outcome: "Mantenimiento bipolar, polo depresivo"
+        distinguishing_features: [mol:hcn1, mol:glutamato-presinaptico, mol:cav-npq]
+      - drug: drug:carbamazepina
+        outcome: "Manía aguda"
+        distinguishing_features: [mol:adenosina-a1]
+      - drug: drug:valproato
+        outcome: "Manía aguda"
+        distinguishing_features: [mol:hdac, mol:gsk3b, mol:gaba-turnover]
+      - drug: drug:fenitoina
+        outcome: "Sin señal afectiva relevante"
+        distinguishing_features: []
+      - drug: drug:lacosamida
+        outcome: "Sin señal afectiva; no probado"
+        distinguishing_features: [mol:nav-lenta]
+      - drug: drug:topiramato
+        outcome: "Fracaso en manía"
+        distinguishing_features: []
+    candidate_explanations:
+      - id: exp-1
+        text: "El efecto afectivo no reside en el canal de sodio sino en
+               mecanismos accesorios idiosincrásicos de cada fármaco."
+        testable: "Buscar un compuesto que bloquee sodio Y potencie Ih sin
+                   compartir nada más con lamotrigina."
+        status: propuesto
+      - id: exp-2
+        text: "El compartimento subcelular manda: lamotrigina es el único
+               con acción dendrítica descrita, en el mismo compartimento
+               que remodela el estrés crónico."
+        testable: "Comparar efecto sobre excitabilidad dendrítica de CA1
+                   entre los miembros del contraste."
+        status: propuesto
+      - id: exp-3
+        text: "El contraste es artefactual: refleja qué compuestos se
+               ensayaron en qué indicación y con qué diseño, no biología.
+               Lamotrigina se probó en mantenimiento y los demás en fases
+               agudas."
+        testable: "Auditar qué diseños se han usado con cada compuesto."
+        status: propuesto
+        notes: "HIPÓTESIS NULA. Debe descartarse antes que las otras dos."

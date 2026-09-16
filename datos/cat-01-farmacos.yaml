@@ -1,0 +1,211 @@
+# =====================================================================
+# CATÁLOGO 01 — Fármacos y blancos moleculares
+# =====================================================================
+# Solo NODOS. Las aristas acts_on se cargan por contraste, no en bloque:
+# cargar 55 fármacos × 15 blancos de memoria produciría ~400 aristas con
+# referencia PENDIENTE, es decir el montón que queremos evitar.
+#
+# Un fármaco puede estar aquí sin ninguna arista. Eso es correcto: el
+# catálogo declara qué existe; los contrastes declaran qué sabemos.
+# =====================================================================
+
+meta:
+  schema_version: "0.1"
+  catalog_id: "cat-01-farmacos"
+  verified: false
+
+drugs:
+
+  # ---- ISRS ------------------------------------------------------
+  - {id: drug:fluoxetina,   name: Fluoxetina,   class: antidepresivo, approval_status: aprobado}
+  - {id: drug:sertralina,   name: Sertralina,   class: antidepresivo, approval_status: aprobado}
+  - {id: drug:paroxetina,   name: Paroxetina,   class: antidepresivo, approval_status: aprobado}
+  - {id: drug:citalopram,   name: Citalopram,   class: antidepresivo, approval_status: aprobado}
+  - {id: drug:escitalopram, name: Escitalopram, class: antidepresivo, approval_status: aprobado}
+  - {id: drug:fluvoxamina,  name: Fluvoxamina,  class: antidepresivo, approval_status: aprobado}
+
+  # ---- Duales y noradrenérgicos ----------------------------------
+  - {id: drug:venlafaxina,    name: Venlafaxina,    class: antidepresivo, approval_status: aprobado}
+  - {id: drug:desvenlafaxina, name: Desvenlafaxina, class: antidepresivo, approval_status: aprobado}
+  - {id: drug:duloxetina,     name: Duloxetina,     class: antidepresivo, approval_status: aprobado}
+  - {id: drug:levomilnaciprán, name: Levomilnaciprán, class: antidepresivo, approval_status: aprobado}
+  - {id: drug:reboxetina,     name: Reboxetina,     class: antidepresivo, approval_status: aprobado_otra_indicacion}
+  - {id: drug:atomoxetina,    name: Atomoxetina,    class: estimulante,   approval_status: aprobado_otra_indicacion}
+
+  # ---- Tricíclicos y tetracíclicos -------------------------------
+  - {id: drug:imipramina,   name: Imipramina,   class: antidepresivo, approval_status: aprobado}
+  - {id: drug:amitriptilina, name: Amitriptilina, class: antidepresivo, approval_status: aprobado}
+  - {id: drug:clomipramina, name: Clomipramina, class: antidepresivo, approval_status: aprobado,
+     notes: "Único tricíclico con eficacia establecida en TOC. Es en sí
+             mismo un contraste pendiente frente al resto de la clase."}
+  - {id: drug:nortriptilina, name: Nortriptilina, class: antidepresivo, approval_status: aprobado}
+  - {id: drug:desipramina,  name: Desipramina,  class: antidepresivo, approval_status: aprobado}
+  - {id: drug:maprotilina,  name: Maprotilina,  class: antidepresivo, approval_status: aprobado}
+  - {id: drug:amoxapina,    name: Amoxapina,    class: antidepresivo, approval_status: aprobado}
+
+  # ---- IMAO ------------------------------------------------------
+  - {id: drug:fenelzina,      name: Fenelzina,      class: antidepresivo, approval_status: aprobado}
+  - {id: drug:tranilcipromina, name: Tranilcipromina, class: antidepresivo, approval_status: aprobado}
+  - {id: drug:selegilina,     name: Selegilina,     class: antidepresivo, approval_status: aprobado}
+  - {id: drug:moclobemida,    name: Moclobemida,    class: antidepresivo, approval_status: aprobado}
+
+  # ---- Antidepresivos de mecanismo atípico -----------------------
+  - {id: drug:bupropion,    name: Bupropión,    class: antidepresivo, approval_status: aprobado}
+  - {id: drug:mirtazapina,  name: Mirtazapina,  class: antidepresivo, approval_status: aprobado}
+  - {id: drug:trazodona,    name: Trazodona,    class: antidepresivo, approval_status: aprobado}
+  - {id: drug:vortioxetina, name: Vortioxetina, class: antidepresivo, approval_status: aprobado}
+  - {id: drug:vilazodona,   name: Vilazodona,   class: antidepresivo, approval_status: aprobado}
+  - {id: drug:agomelatina,  name: Agomelatina,  class: antidepresivo, approval_status: aprobado}
+  - {id: drug:tianeptina,   name: Tianeptina,   class: antidepresivo, approval_status: aprobado_otra_indicacion,
+     notes: "Contraste valioso: potencia la recaptura de serotonina —
+             dirección opuesta a los ISRS — y tiene eficacia reportada.
+             Agonista mu. Desafía la hipótesis monoaminérgica de frente."}
+
+  # ---- Glutamatérgicos y de acción rápida ------------------------
+  - {id: drug:ketamina,   name: Ketamina,   class: experimental, approval_status: uso_no_aprobado}
+  - {id: drug:esketamina, name: Esketamina, class: antidepresivo, approval_status: aprobado}
+  - {id: drug:dextrometorfano-bupropion, name: "Dextrometorfano-bupropión",
+     class: antidepresivo, approval_status: aprobado}
+
+  # ---- Neuroesteroides -------------------------------------------
+  - {id: drug:brexanolona, name: Brexanolona, class: neuroesteroide, approval_status: aprobado}
+  - {id: drug:zuranolona,  name: Zuranolona,  class: neuroesteroide, approval_status: aprobado,
+     notes: "Eficaz en depresión posparto; fracasó en depresión mayor
+             general. Contraste de enriquecimiento por subpoblación
+             biológicamente definida — pendiente de cargar."}
+
+  # ---- Antipsicóticos con efecto afectivo ------------------------
+  - {id: drug:quetiapina,  name: Quetiapina,  class: antipsicotico, approval_status: aprobado,
+     notes: "Indicada en manía, depresión bipolar, coadyuvante en depresión
+             mayor, y usada fuera de indicación para insomnio y ansiedad.
+             La promiscuidad terapéutica es un dato sobre la nosología."}
+  - {id: drug:lurasidona,  name: Lurasidona,  class: antipsicotico, approval_status: aprobado}
+  - {id: drug:olanzapina,  name: Olanzapina,  class: antipsicotico, approval_status: aprobado}
+  - {id: drug:aripiprazol, name: Aripiprazol, class: antipsicotico, approval_status: aprobado}
+  - {id: drug:cariprazina, name: Cariprazina, class: antipsicotico, approval_status: aprobado}
+  - {id: drug:brexpiprazol, name: Brexpiprazol, class: antipsicotico, approval_status: aprobado}
+  - {id: drug:risperidona, name: Risperidona, class: antipsicotico, approval_status: aprobado}
+  - {id: drug:haloperidol, name: Haloperidol, class: antipsicotico, approval_status: aprobado}
+  - {id: drug:clozapina,   name: Clozapina,   class: antipsicotico, approval_status: aprobado}
+  - {id: drug:lumateperona, name: Lumateperona, class: antipsicotico, approval_status: aprobado}
+  - {id: drug:xanomelina-trospio, name: "Xanomelina-trospio", class: antipsicotico,
+     approval_status: aprobado,
+     notes: "Primera aprobación antipsicótica sin bloqueo D2. El beneficio
+             cognitivo aparece solo en pacientes con cognición basal pobre
+             — estratificación replicada prospectivamente."}
+
+  # ---- Estabilizador ---------------------------------------------
+  - {id: drug:litio, name: Litio, class: estabilizador, approval_status: aprobado,
+     notes: "El fármaco más eficaz de la psiquiatría y el de mecanismo
+             menos resuelto. Candidatos: GSK-3 beta, depleción de inositol,
+             regulación circadiana."}
+
+  # ---- Anticrisis: con efecto afectivo positivo ------------------
+  - {id: drug:lamotrigina,  name: Lamotrigina,  class: anticrisis, approval_status: aprobado}
+  - {id: drug:valproato,    name: Valproato,    class: estabilizador, approval_status: aprobado}
+  - {id: drug:carbamazepina, name: Carbamazepina, class: anticrisis, approval_status: aprobado}
+  - {id: drug:oxcarbazepina, name: Oxcarbazepina, class: anticrisis, approval_status: aprobado_otra_indicacion}
+
+  # ---- Anticrisis: sin señal afectiva (controles negativos) ------
+  - {id: drug:fenitoina,   name: Fenitoína,   class: anticrisis, approval_status: aprobado_otra_indicacion}
+  - {id: drug:lacosamida,  name: Lacosamida,  class: anticrisis, approval_status: aprobado_otra_indicacion}
+  - {id: drug:topiramato,  name: Topiramato,  class: anticrisis, approval_status: aprobado_otra_indicacion}
+  - {id: drug:zonisamida,  name: Zonisamida,  class: anticrisis, approval_status: aprobado_otra_indicacion}
+  - {id: drug:gabapentina, name: Gabapentina, class: anticrisis, approval_status: aprobado_otra_indicacion}
+  - {id: drug:pregabalina, name: Pregabalina, class: ansiolitico, approval_status: aprobado}
+
+  # ---- Anticrisis: con efecto afectivo NEGATIVO ------------------
+  # Estos son tan informativos como los positivos: un fármaco que INDUCE
+  # un fenotipo es evidencia causal de mejor calidad que uno que lo trata.
+  - {id: drug:levetiracetam, name: Levetiracetam, class: anticrisis, approval_status: aprobado_otra_indicacion,
+     notes: "Irritabilidad, disforia y agresividad en una fracción
+             sustancial. Arista 'induces' pendiente de cargar."}
+  - {id: drug:perampanel,   name: Perampanel,   class: anticrisis, approval_status: aprobado_otra_indicacion,
+     notes: "Advertencia regulatoria por agresividad y hostilidad.
+             Antagonista AMPA — dirección opuesta a los moduladores
+             alostéricos positivos de AMPA en desarrollo para depresión.
+             Contraste de alto valor, pendiente."}
+  - {id: drug:vigabatrina,  name: Vigabatrina,  class: anticrisis, approval_status: aprobado_otra_indicacion}
+
+  # ---- Otros con efecto afectivo documentado ---------------------
+  - {id: drug:reserpina, name: Reserpina, class: hormona, approval_status: retirado,
+     notes: "El caso fundacional, y va en sentido contrario: indujo
+             depresión y de ahí nació la hipótesis monoaminérgica."}
+  - {id: drug:prazosina,   name: Prazosina,   class: experimental, approval_status: uso_no_aprobado}
+  - {id: drug:escopolamina, name: Escopolamina, class: experimental, approval_status: uso_no_aprobado}
+  - {id: drug:pramipexol,  name: Pramipexol,  class: experimental, approval_status: uso_no_aprobado}
+  - {id: drug:infliximab,  name: Infliximab,  class: antiinflamatorio, approval_status: aprobado_otra_indicacion}
+  - {id: drug:aticaprant,  name: Aticaprant,  class: experimental, approval_status: discontinuado}
+  - {id: drug:navacaprant, name: Navacaprant, class: experimental, approval_status: discontinuado}
+  - {id: drug:ezogabina,   name: Ezogabina,   class: anticrisis, approval_status: retirado}
+  - {id: drug:seltorexant, name: Seltorexant, class: experimental, approval_status: fase_3}
+  - {id: drug:psilocibina, name: Psilocibina, class: psicodelico, approval_status: fase_3}
+
+# =====================================================================
+# BLANCOS MOLECULARES
+# =====================================================================
+molecules:
+
+  # ---- Transportadores -------------------------------------------
+  - {id: mol:SERT, name: "Transportador de serotonina (SERT)", subtype: transportador, gene: SLC6A4}
+  - {id: mol:NET,  name: "Transportador de noradrenalina (NET)", subtype: transportador, gene: SLC6A2}
+  - {id: mol:DAT,  name: "Transportador de dopamina (DAT)", subtype: transportador, gene: SLC6A3}
+  - {id: mol:VMAT2, name: "VMAT2", subtype: transportador, gene: SLC18A2}
+
+  # ---- Receptores serotoninérgicos -------------------------------
+  - {id: mol:5HT1A, name: "Receptor 5-HT1A", subtype: receptor_gpcr, gene: HTR1A}
+  - {id: mol:5HT2A, name: "Receptor 5-HT2A", subtype: receptor_gpcr, gene: HTR2A}
+  - {id: mol:5HT2C, name: "Receptor 5-HT2C", subtype: receptor_gpcr, gene: HTR2C}
+  - {id: mol:5HT3,  name: "Receptor 5-HT3", subtype: receptor_ionotropico, gene: HTR3A}
+  - {id: mol:5HT7,  name: "Receptor 5-HT7", subtype: receptor_gpcr, gene: HTR7}
+
+  # ---- Receptores dopaminérgicos ---------------------------------
+  - {id: mol:D1, name: "Receptor D1", subtype: receptor_gpcr, gene: DRD1}
+  - {id: mol:D2, name: "Receptor D2", subtype: receptor_gpcr, gene: DRD2}
+  - {id: mol:D3, name: "Receptor D3", subtype: receptor_gpcr, gene: DRD3}
+
+  # ---- Otros receptores ------------------------------------------
+  - {id: mol:A1-adrenergico, name: "Receptor alfa-1 adrenérgico", subtype: receptor_gpcr}
+  - {id: mol:A2-adrenergico, name: "Receptor alfa-2 adrenérgico", subtype: receptor_gpcr}
+  - {id: mol:H1, name: "Receptor H1 de histamina", subtype: receptor_gpcr, gene: HRH1}
+  - {id: mol:M1, name: "Receptor muscarínico M1", subtype: receptor_gpcr, gene: CHRM1}
+  - {id: mol:M4, name: "Receptor muscarínico M4", subtype: receptor_gpcr, gene: CHRM4}
+  - {id: mol:KOR, name: "Receptor opioide kappa", subtype: receptor_gpcr, gene: OPRK1}
+  - {id: mol:MOR, name: "Receptor opioide mu", subtype: receptor_gpcr, gene: OPRM1}
+  - {id: mol:OX2R, name: "Receptor de orexina 2", subtype: receptor_gpcr, gene: HCRTR2}
+  - {id: mol:MT1-MT2, name: "Receptores de melatonina MT1/MT2", subtype: receptor_gpcr}
+
+  # ---- Glutamato y GABA ------------------------------------------
+  - {id: mol:NMDA, name: "Receptor NMDA", subtype: receptor_ionotropico}
+  - {id: mol:AMPA, name: "Receptor AMPA", subtype: receptor_ionotropico}
+  - {id: mol:GABAA, name: "Receptor GABA-A", subtype: receptor_ionotropico}
+  - {id: mol:GABAA-extrasinaptico, name: "Receptor GABA-A extrasináptico", subtype: receptor_ionotropico}
+
+  # ---- Enzimas ---------------------------------------------------
+  - {id: mol:MAOA, name: "Monoaminooxidasa A", subtype: enzima, gene: MAOA}
+  - {id: mol:MAOB, name: "Monoaminooxidasa B", subtype: enzima, gene: MAOB}
+  - {id: mol:PDE4, name: "Fosfodiesterasa 4", subtype: enzima}
+
+  # ---- Cascada neurotrófica --------------------------------------
+  - {id: mol:mTOR, name: "mTORC1", subtype: cinasa}
+  - {id: mol:AKT,  name: "Akt", subtype: cinasa}
+  - {id: mol:MEK,  name: "MEK", subtype: cinasa}
+  - {id: mol:PLCG1, name: "Fosfolipasa C gamma 1", subtype: enzima,
+     notes: "Rama pY816 de TrkB. Implicada tanto en plasticidad como en
+             epileptogénesis — misma rama, direcciones opuestas."}
+  - {id: mol:CREB, name: "CREB", subtype: factor_transcripcion}
+  - {id: mol:TRPC6, name: "Canal TRPC6", subtype: canal_ionico, gene: TRPC6,
+     notes: "Efector río abajo de TrkB vía PLC-gamma y diacilglicerol.
+             Blanco directo de la hiperforina."}
+
+  # ---- Inmunitarios ----------------------------------------------
+  - {id: mol:TNF,  name: "Factor de necrosis tumoral alfa", subtype: citocina}
+  - {id: mol:IL6,  name: "Interleucina 6", subtype: citocina}
+  - {id: mol:IL1B, name: "Interleucina 1 beta", subtype: citocina}
+  - {id: mol:CRP,  name: "Proteína C reactiva", subtype: estructural}
+
+  # ---- Membrana --------------------------------------------------
+  - {id: mol:colesterol-membrana, name: "Colesterol de membrana", subtype: lipido_membrana,
+     notes: "Cofactor conformacional. El sitio de unión de antidepresivos
+             en el dominio transmembrana de TrkB depende de él, con
+             relación bifásica."}

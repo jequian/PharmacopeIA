@@ -1,0 +1,10 @@
+visor.html
+*.pyc
+__pycache__/
+.DS_Store
+.venv/
+KiDatabase.csv
+espacial/densidades.csv
+espacial/parcelas.csv
+/tmp/
+cap-*.png
