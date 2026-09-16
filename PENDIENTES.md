@@ -120,6 +120,7 @@ Ordenados por valor esperado.
       los nodos por los que todos pasan. Es la función que contesta la
       pregunta original del proyecto.
 - [ ] Editor de aristas en el visor, para no escribir YAML a mano.
+- [ ] Integración y análisis de fenotipado digital con Beiwe (ver sección 10).
 
 ---
 
@@ -231,3 +232,14 @@ Por hacer:
       invalida todo lo calculado.
 - [ ] 94 de los blancos del grafo no tienen mapa de densidad. La cobertura
       PET es mucho más estrecha que la del PDSP.
+
+---
+
+## 10. Fenotipado digital y análisis de datos continuos (Beiwe)
+
+Interés en incorporar la plataforma **Beiwe** ([onnela-lab/beiwe](https://github.com/onnela-lab/beiwe.git), Onnela Lab / Harvard) y análisis relativos a esta modalidad de datos:
+
+- [ ] **Modalidad de datos:** Fenotipado digital continuo (sensores pasivos: acelerometría, GPS/movilidad, patrones de comunicación/uso de smartphone, y encuestas activas EMA) en contraposición o complemento a escalas clínicas transversales discretas (e.g., HAM-D, Y-BOCS, MADRS).
+- [ ] **Mapeo al esquema:** Definir cómo representar en el grafo métricas continuas derivadas de fenotipado digital (estabilidad circadiana, fragmentación del sueño, variabilidad de movilidad, latencia de respuesta digital) dentro de los nodos `phenotype` o asociados a desenlaces en nodos `trial`.
+- [ ] **Análisis de contraste:** Explorar si las discrepancias de respuesta clínica entre fármacos con mecanismo nominal idéntico se manifiestan tempranamente en marcadores digitales objetivos (por ejemplo, cambios motores o de ritmo sueño-vigilia previo a la respuesta sindrómica formal).
+- [ ] **Pipeline de ingesta:** Desarrollar herramientas (`herramientas/`) para ingerir y resumir características de series temporales conductuales provenientes de Beiwe para correlacionarlas con vías y afinidades del grafo.
