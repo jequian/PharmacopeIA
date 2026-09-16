@@ -194,3 +194,40 @@ carbamazepina, levetiracetam, litio y el resto de anticrisis no aparecen
 en el PDSP porque actúan sobre canales y enzimas, no sobre receptores de
 unión de radioligando. El contraste de bloqueadores de sodio no se puede
 alimentar desde esta fuente.
+
+---
+
+## 9. Capa espacial — estado
+
+Implementada la estructura: nodos `parcel` y `spatialmap`, aristas
+`has_density`, `spans` y `spatially_similar`, y
+`herramientas/mapa_predicho.py`.
+
+Probada de punta a punta con datos **sintéticos** (`espacial/*-DEMO.csv`).
+La demostración dejó dos cosas claras:
+
+- [ ] **Un solo blanco domina el peso en la mayoría de los fármacos.** Con
+      pesos proporcionales a 1/Ki, el mapa de la fluoxetina es 97% el mapa
+      del transportador de serotonina, y el de la amitriptilina es 83% el
+      del receptor H1. Para esos fármacos el "mapa del fármaco" no aporta
+      nada sobre el mapa del receptor dominante. Hay que decidir: usar
+      ocupación fraccional a una concentración realista en vez de 1/Ki
+      crudo, o aceptar que el método solo discrimina entre fármacos
+      genuinamente promiscuos (clozapina, quetiapina, antipsicóticos).
+- [ ] **El nulo espacial cambia todo.** En la demo, un rho de 0.84 contra
+      el gradiente dio p espacial de 0.35. Un nulo por permutación simple
+      habría dado p<0.0001. Confirma que la regla R10 de AGENTS.md no es
+      pedantería.
+
+Por hacer:
+- [ ] Correr `herramientas/preparar_mapas.py` en el MacBook para generar
+      las densidades reales. No corre en el contenedor: los mapas están en
+      OSF y figshare, fuera de la red permitida.
+- [ ] Verificar la cita de origen de los mapas (Hansen et al., Nature
+      Neuroscience 2022). Dada de memoria.
+- [ ] Obtener el gradiente funcional principal. Requiere brainspace sobre
+      una matriz de conectividad; no automatizado.
+- [ ] Decidir la parcelación definitiva y anotarla. Cambiarla después
+      invalida todo lo calculado.
+- [ ] 94 de los blancos del grafo no tienen mapa de densidad. La cobertura
+      PET es mucho más estrecha que la del PDSP.
